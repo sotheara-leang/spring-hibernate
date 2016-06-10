@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project>
+<Configuration shutdownHook="disable" status="warn">
+	<Properties>
+		<Property name="baseDir">logs</Property>
+	</Properties>
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{36} - %msg%n" />
+		</Console>
+		<RollingFile name="ErrorFileAppender" fileName="${baseDir}/log-error.log"
+			filePattern="${baseDir}/errors/$${date:dd-MM-yyyy}/log-error-%d{yyyy-MM-dd-HH}-%i.log" append="false">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{36}.%M[%M:%L] - %msg%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="DebugFileAppender" fileName="${baseDir}/log-debug.log"
+			filePattern="${baseDir}/debugs/$${date:dd-MM-yyyy}/log-debug-%d{yyyy-MM-dd-HH}-%i.log" append="false">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{36} - %msg%n" />
+			<LevelRangeFilter minLevel="WARN" maxLevel="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+		</RollingFile>
+		<RollingFile name="SQLFileAppender" fileName="${baseDir}/log-sql.log"
+			filePattern="${baseDir}/sqls/$${date:dd-MM-yyyy}/log-sql-%d{yyyy-MM-dd-HH}-%i.log" append="false">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{36} - %msg%n" />
+			<LevelRangeFilter minLevel="WARN" maxLevel="TRACE" onMatch="ACCEPT" onMismatch="DENY" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="com.mcnc.springhibernatelog4j" level="DEBUG" />
+
+		<Logger name="org.hibernate.SQL" level="TRACE">
+			<AppenderRef ref="SQLFileAppender" />
+		</Logger>
+		
+		<Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE">
+			<AppenderRef ref="SQLFileAppender" />
+		</Logger>
+		
+		<Root>
+			<AppenderRef ref="Console" level="DEBUG" />
+			<AppenderRef ref="ErrorFileAppender" level="ERROR" />
+			<AppenderRef ref="DebugFileAppender"/>
+		</Root>
+	</Loggers>
+</Configuration>
